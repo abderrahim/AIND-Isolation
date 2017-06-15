@@ -112,6 +112,7 @@ class IsolationPlayer:
         positive value large enough to allow the function to return before the
         timer expires.
     """
+
     def __init__(self, search_depth=3, score_fn=custom_score, timeout=10.):
         self.search_depth = search_depth
         self.score = score_fn
@@ -157,7 +158,8 @@ class MinimaxPlayer(IsolationPlayer):
 
         # Initialize the best move so that this function returns something
         # in case the search fails due to timeout
-        best_move = (-1, -1)
+        legal_moves = game.get_legal_moves(self)
+        best_move = legal_moves[0] if legal_moves else (-1, -1)
 
         try:
             # The try/except block will automatically catch the exception
@@ -212,8 +214,36 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        _, move = self.max(game, depth)
+        return move
+
+    def max(self, game, depth):
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if depth == 0:
+            # depth limit reached, just return the current score
+            return self.score(game, self), (-1, -1)
+
+        legal_moves = game.get_legal_moves()
+        if not legal_moves:
+            return float('-inf'), (-1, -1) # I've lost
+
+        return max((self.min(game.forecast_move(m), depth - 1)[0], m) for m in legal_moves)
+
+    def min(self, game, depth):
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if depth == 0:
+            # depth limit reached, just return the current score
+            return self.score(game, self), (-1, -1)
+
+        legal_moves = game.get_legal_moves()
+        if not legal_moves:
+            return float('+inf'), (-1, -1) # I've won
+
+        return min(self.max(game.forecast_move(m), depth - 1) for m in legal_moves)
 
 
 class AlphaBetaPlayer(IsolationPlayer):
