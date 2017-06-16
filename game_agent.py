@@ -218,6 +218,8 @@ class MinimaxPlayer(IsolationPlayer):
         return move
 
     def max(self, game, depth):
+        """Computes a max step in a minimax search."""
+
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
@@ -232,6 +234,8 @@ class MinimaxPlayer(IsolationPlayer):
         return max((self.min(game.forecast_move(m), depth - 1)[0], m) for m in legal_moves)
 
     def min(self, game, depth):
+        """Computes a min step in a minimax search."""
+
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
