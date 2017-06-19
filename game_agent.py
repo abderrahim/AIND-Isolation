@@ -294,12 +294,14 @@ class AlphaBetaPlayer(IsolationPlayer):
         best_move = legal_moves[0] if legal_moves else (-1, -1)
 
         try:
-            # The try/except block will automatically catch the exception
-            # raised when the timer is about to expire.
-            return self.alphabeta(game, self.search_depth)
+            # Search to endgame if possible. The try-catch block will catch the
+            # exception when we have no more time
+            remaining_moves = game.height * game.width - game.move_count
 
+            for depth in range(remaining_moves):
+                best_move = self.alphabeta(game, depth)
         except SearchTimeout:
-            pass  # Handle any actions required after timeout as needed
+            pass
 
         # Return the best move from the last completed search iteration
         return best_move
@@ -352,7 +354,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        _, move = self.max(game, depth, float('-inf'), float('+inf'))
+        _, move = self.max(game, depth, alpha, beta)
 
         return move
 
