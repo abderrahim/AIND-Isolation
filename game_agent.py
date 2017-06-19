@@ -241,7 +241,7 @@ class MinimaxPlayer(IsolationPlayer):
 
         if depth == 0:
             # depth limit reached, just return the current score
-            return self.score(game, self), (-1, -1)
+            return self.score(game, self)
 
         legal_moves = game.get_legal_moves()
         if not legal_moves:
