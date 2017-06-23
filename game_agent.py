@@ -214,8 +214,7 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        _, move = self.max(game, depth)
-        return move
+        return max(game.get_legal_moves(), key=lambda m: self.min(game.forecast_move(m), depth - 1), default=(-1, -1))
 
     def max(self, game, depth):
         """Computes a max step in a minimax search."""
@@ -225,13 +224,14 @@ class MinimaxPlayer(IsolationPlayer):
 
         if depth == 0:
             # depth limit reached, just return the current score
-            return self.score(game, self), (-1, -1)
+            return self.score(game, self)
 
         legal_moves = game.get_legal_moves()
         if not legal_moves:
-            return float('-inf'), (-1, -1) # I've lost
+            # game ended, return the current score
+            return self.score(game, self)
 
-        return max((self.min(game.forecast_move(m), depth - 1)[0], m) for m in legal_moves)
+        return max(self.min(game.forecast_move(m), depth - 1) for m in legal_moves)
 
     def min(self, game, depth):
         """Computes a min step in a minimax search."""
@@ -245,7 +245,8 @@ class MinimaxPlayer(IsolationPlayer):
 
         legal_moves = game.get_legal_moves()
         if not legal_moves:
-            return float('+inf'), (-1, -1) # I've won
+            # game ended, return the current score
+            return self.score(game, self)
 
         return min(self.max(game.forecast_move(m), depth - 1) for m in legal_moves)
 
