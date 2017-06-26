@@ -2,7 +2,7 @@
 test your agent's strength against a set of known agents using tournament.py
 and include the results in your report.
 """
-import random
+import math
 
 
 class SearchTimeout(Exception):
@@ -34,8 +34,15 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return -4. * game.height * game.width + game.move_count
+
+    if game.is_winner(player):
+        return float("inf")
+
+    my_moves = set(game.get_legal_moves(player))
+    opponent_moves = set(game.get_legal_moves(game.get_opponent(player)))
+    return len(my_moves) - 0.5 * math.log(game.move_count) * len(opponent_moves)
 
 
 def custom_score_2(game, player):
@@ -60,8 +67,16 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return -2. * game.height * game.width + game.move_count
+
+    if game.is_winner(player):
+        return float("inf")
+
+    my_moves = set(game.get_legal_moves(player))
+    opponent_moves = set(game.get_legal_moves(game.get_opponent(player)))
+
+    return float(2*len(my_moves) - 2*len(opponent_moves))
 
 
 def custom_score_3(game, player):
@@ -86,8 +101,16 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    my_moves = set(game.get_legal_moves(player))
+    opponent_moves = set(game.get_legal_moves(game.get_opponent(player)))
+
+    return float(2*len(my_moves) - len(opponent_moves))
 
 
 class IsolationPlayer:
